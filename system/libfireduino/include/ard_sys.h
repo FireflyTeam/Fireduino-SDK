@@ -20,6 +20,7 @@ extern "C" {
 
 // get systick count value
 extern unsigned long get_SystickCount(void);
+extern unsigned int get_sys_random_seed(void);
 
 #ifdef __cplusplus
 }

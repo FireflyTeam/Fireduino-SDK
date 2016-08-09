@@ -1,18 +1,19 @@
  /**
  * @file ard_audio.h
  * @brief Definitions audio driver header for Fireduino
- * @author jiang<jdz@t-chip.com.cn> 
+ * @author jiang<jdz@t-chip.com.cn>
  * @version V1.0
  * @date 2016.02
- * 
+ *
  * @par Copyright:
  * Copyright (c) 2016 T-CHIP INTELLIGENCE TECHNOLOGY CO.,LTD. \n\n
  *
  * For more information, please visit website <http://www.t-firefly.com/>, \n\n
  * or email to <service@t-firefly.com>.
- */ 
-#ifndef _ARDUINO_AUDIO_H_
-#define _ARDUINO_AUDIO_H_
+ */
+
+#ifndef _ARDUINO_ADUIO_H_
+#define _ARDUINO_ADUIO_H_
 
 
 #ifdef __cplusplus

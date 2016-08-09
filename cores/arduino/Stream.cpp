@@ -1,4 +1,5 @@
-/* @file Stream.cpp
+/**
+ * @file Stream.cpp
  * @brief Definitions Stream class for Fireduino
  * @author jiang<jdz@t-chip.com.cn> 
  * @version V1.0

@@ -51,7 +51,6 @@ int HardwareSerial::available(void)
 
 int HardwareSerial::peek(void)
 {
-	return 0;
 	return ard_uart_peek(dev_id);
 }
 

@@ -4,7 +4,7 @@ fireduino.pid.0=0x003e
 
 fireduino.upload.tool=rknanouploader
 fireduino.upload.protocol=script
-fireduino.upload.maximum_size=524288
+fireduino.upload.maximum_size=3145728
 fireduino.upload.use_1200bps_touch=true
 fireduino.upload.wait_for_upload_port=false
 fireduino.upload.native_usb=false

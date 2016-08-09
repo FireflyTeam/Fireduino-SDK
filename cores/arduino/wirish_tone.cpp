@@ -36,6 +36,13 @@ void timerCallback1(void)
 		// Keep Low after stop
 		digitalWrite(gTonePin,LOW);
 	}
+//	static unsigned int count;
+//	if (count == 200)
+//	{
+//		count = 0;
+//		printf("timerCallback1!\r\n");
+//	}
+//	count++;
 }
 
 
@@ -54,12 +61,6 @@ void tone(unsigned int pin,unsigned int freq,unsigned int duration = 0)
 		//set pinMode
 		pinMode(pin,OUTPUT);
 
-		// Init Timer 1 and start Timer 1
-		ard_timer_init(1,timerCallback1);
-		ard_timer_stop(1);
-		ard_timer_set_count(1,(1000000/freq/2));
-		ard_timer_start(1);
-
 		// Set the tone pin
 		gTonePin = pin;
 
@@ -71,17 +72,18 @@ void tone(unsigned int pin,unsigned int freq,unsigned int duration = 0)
 
 		// Save Current frequency
 		gFreq = freq;
+
+		// Init Timer 1 and start Timer 1
+		ard_timer_init(1,timerCallback1);
+		ard_timer_stop(1);
+		ard_timer_set_count(1,(1000000/freq/2));
+		ard_timer_start(1);
 	}
 
 	else
 		// one pin has generated the tone and frequency is changed
 		if (gTonePinMask == (0x1 << pin) && freq != gFreq)
 			{
-				// Updata the duration time
-				ard_timer_stop(1);
-				ard_timer_set_count(1,(1000000/freq/2));
-				ard_timer_start(1);
-
 				// Get current time(ms) and restore in gTimeCount
 				gTimeCount = millis();
 
@@ -90,6 +92,11 @@ void tone(unsigned int pin,unsigned int freq,unsigned int duration = 0)
 
 				// Save Current frequency
 				gFreq = freq;
+
+				// Updata the duration time
+				ard_timer_stop(1);
+				ard_timer_set_count(1,(1000000/freq/2));
+				ard_timer_start(1);
 			}
 	return;
 }
