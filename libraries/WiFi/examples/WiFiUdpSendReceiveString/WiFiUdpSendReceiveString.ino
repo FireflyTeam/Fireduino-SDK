@@ -1,0 +1,106 @@
+ /**
+ * @file WiFiUdpSendReceiveString.ino
+ * @brief Definitions WiFiUdpSendReceiveString Demo for Fireduino
+ * @author jiang<jdz@t-chip.com.cn> 
+ * @version V1.0
+ * @date 2016.02
+ * 
+ * @par Copyright:
+ * Copyright (c) 2016 T-CHIP INTELLIGENCE TECHNOLOGY CO.,LTD. \n\n
+ *
+ * For more information, please visit website <http://www.t-firefly.com/>, \n\n
+ * or email to <service@t-firefly.com>.
+ */ 
+#include <Arduino.h>
+#include <WiFi.h>
+#include <WiFiUdp.h>
+
+int status = WL_IDLE_STATUS;
+char ssid[] = "yourNetwork"; //  your network SSID (name)
+char pass[] = "secretPassword";    // your network password (use for WPA, or use as key for WEP)
+int keyIndex = 0;            // your network key Index number (needed only for WEP)
+
+unsigned int localPort = 2390;      // local port to listen on
+
+char packetBuffer[255]; //buffer to hold incoming packet
+char  ReplyBuffer[] = "acknowledged";       // a string to send back
+
+WiFiUDP Udp;
+
+void printWifiStatus();
+
+void setup() {
+  // Open serial communications and wait for port to open:
+  Serial.begin(115200);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB port only
+  }
+
+  // attempt to connect to Wifi network:
+  while (status != WL_CONNECTED) {
+    Serial.print("Attempting to connect to SSID: ");
+    Serial.println(ssid);
+    // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
+    status = WiFi.begin(ssid, pass);
+
+    // wait 10 seconds for connection:
+    // delay(10000);
+  }
+
+  Serial.println("Connected to wifi");
+  printWifiStatus();
+
+  Serial.print("\nStarting UDP server at ");
+  Serial.print(WiFi.localIP());
+  Serial.print(":");
+  Serial.print(localPort);
+  Serial.println(" ...");
+  // if you get a connection, report back via serial:
+  Udp.begin(localPort);
+}
+
+void loop() {
+
+  // if there's data available, read a packet
+  int packetSize = Udp.parsePacket();
+  if (packetSize) {
+    Serial.print("Received packet of size ");
+    Serial.println(packetSize);
+    Serial.print("From ");
+    IPAddress remoteIp = Udp.remoteIP();
+    Serial.print(remoteIp);
+    Serial.print(", port ");
+    Serial.println(Udp.remotePort());
+
+    // read the packet into packetBufffer
+    int len = Udp.read(packetBuffer, 255);
+    if (len > 0) {
+      packetBuffer[len] = 0;
+    }
+    Serial.println("Contents:");
+    Serial.println(packetBuffer);
+
+    // send a reply, to the IP address and port that sent us the packet we received
+    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+    Udp.write(ReplyBuffer);
+    Udp.endPacket();
+  }
+}
+
+
+void printWifiStatus() {
+  // print the SSID of the network you're attached to:
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
+
+  // print your WiFi shield's IP address:
+  IPAddress ip = WiFi.localIP();
+  Serial.print("IP Address: ");
+  Serial.println(ip);
+
+  // print the received signal strength:
+  long rssi = WiFi.RSSI();
+  Serial.print("signal strength (RSSI):");
+  Serial.print(rssi);
+  Serial.println(" dBm");
+}
