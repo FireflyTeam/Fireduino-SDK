@@ -1482,6 +1482,9 @@ SECTIONS
 		*(driver_spi_spidevice_read)
 		
 		*(ap6181wice_wifi_init)	
+		
+		*(cpu_nanod_lib_vop_init)
+		*(cpu_nanod_lib_vop_read)
 		. = ALIGN(4);
 		
 	}
