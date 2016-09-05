@@ -1,0 +1,86 @@
+ /**
+ * @file AllInputsFirmata.ino
+ * @brief Definitions AllInputsFirmata Demo for Fireduino
+ * @author jiang<jdz@t-chip.com.cn> 
+ * @version V1.0
+ * @date 2016.02
+ * 
+ * @par Copyright:
+ * Copyright (c) 2016 T-CHIP INTELLIGENCE TECHNOLOGY CO.,LTD. \n\n
+ *
+ * For more information, please visit website <http://www.t-firefly.com/>, \n\n
+ * or email to <service@t-firefly.com>.
+ */ 
+#include <Firmata.h>
+
+byte pin;
+
+int analogValue;
+int previousAnalogValues[TOTAL_ANALOG_PINS];
+
+byte portStatus[TOTAL_PORTS]; // each bit: 1=pin is digital input, 0=other/ignore
+byte previousPINs[TOTAL_PORTS];
+
+/* timer variables */
+unsigned long currentMillis;     // store the current value from millis()
+unsigned long previousMillis;    // for comparison with currentMillis
+/* make sure that the FTDI buffer doesn't go over 60 bytes, otherwise you
+   get long, random delays.  So only read analogs every 20ms or so */
+int samplingInterval = 19;      // how often to run the main loop (in ms)
+
+void sendPort(byte portNumber, byte portValue)
+{
+  portValue = portValue & portStatus[portNumber];
+  if (previousPINs[portNumber] != portValue) {
+    Firmata.sendDigitalPort(portNumber, portValue);
+    previousPINs[portNumber] = portValue;
+  }
+}
+
+void setup()
+{
+  byte i, port, status;
+
+  Firmata.setFirmwareVersion(FIRMATA_FIRMWARE_MAJOR_VERSION, FIRMATA_FIRMWARE_MINOR_VERSION);
+
+  for (pin = 0; pin < TOTAL_PINS; pin++) {
+    if IS_PIN_DIGITAL(pin) pinMode(PIN_TO_DIGITAL(pin), INPUT);
+  }
+
+  for (port = 0; port < TOTAL_PORTS; port++) {
+    status = 0;
+    for (i = 0; i < 8; i++) {
+      if (IS_PIN_DIGITAL(port * 8 + i)) status |= (1 << i);
+    }
+    portStatus[port] = status;
+  }
+
+  Firmata.begin(57600);
+}
+
+void loop()
+{
+  byte i;
+
+  for (i = 0; i < TOTAL_PORTS; i++) {
+    sendPort(i, readPort(i, 0xff));
+  }
+  /* make sure that the FTDI buffer doesn't go over 60 bytes, otherwise you
+     get long, random delays.  So only read analogs every 20ms or so */
+  currentMillis = millis();
+  if (currentMillis - previousMillis > samplingInterval) {
+    previousMillis += samplingInterval;
+    while (Firmata.available()) {
+      Firmata.processInput();
+    }
+    for (pin = 0; pin < TOTAL_ANALOG_PINS; pin++) {
+      analogValue = analogRead(pin);
+      if (analogValue != previousAnalogValues[pin]) {
+        Firmata.sendAnalog(pin, analogValue);
+        previousAnalogValues[pin] = analogValue;
+      }
+    }
+  }
+}
+
+

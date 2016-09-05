@@ -1,0 +1,28 @@
+#######################################
+# Syntax Coloring Map For ArudinoWebsocketServer
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+WebSocketServer	KEYWORD1	WebSocketServer
+WebSocket	KEYWORD1	WebSocket
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+registerDataCallback	KEYWORD2
+registerConnectionCallback	KEYWORD2
+registerDisconnectionCallback	KEYWORD2
+begin	KEYWORD2
+listen	KEYWORD2
+connectionCount	KEYWORD2
+send	KEYWORD2
+isConnected	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
