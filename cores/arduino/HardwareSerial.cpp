@@ -68,6 +68,6 @@ void HardwareSerial::flush(void) {
 	ard_uart_flush(dev_id);
 }
 
-HardwareSerial Serial1(1);
-HardwareSerial Serial(2);
+HardwareSerial Serial2(1);
+HardwareSerial Serial1(2);
 

@@ -43,7 +43,7 @@
 #include "wirish_shift.h"
 #include "wirish_tone.h"
 #include "WInterrupts.h"
-//#include "USBSerial.h"
+#include "USBSerial.h"
 
 // typedef uint16 word;// definition from Arduino website, now appears to be incorrect for 32 bit devices
 

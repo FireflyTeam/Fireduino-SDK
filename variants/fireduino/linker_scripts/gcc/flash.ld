@@ -41,7 +41,7 @@ SECTIONS
 		 *(.comment) 
 	 }
 	 
-	.moduleinfo (SYS_DATA_BASE - 0x1f50) : AT (BOOT_ROM_BASE)
+	.moduleinfo (BOOT_ROM_BASE) : AT (BOOT_ROM_BASE)
 	{
 		KEEP(*(_ModuleInfo_ _ModuleInfo_.*))	
 		. = ALIGN(4);		
@@ -65,7 +65,7 @@ SECTIONS
 	_task_info_data_len_ = SIZEOF ( .task_info_data );
 
 	_dmr_data_load_addr = LOADADDR(.task_info_data) + SIZEOF (.task_info_data);		
-	OVERLAY SHELL_CODE_START : NOCROSSREFS  AT (_dmr_data_load_addr)
+	OVERLAY BOOT_ROM_BASE : NOCROSSREFS  AT (_dmr_data_load_addr)
 	{
 		.dmr_device_data
 		{
@@ -183,7 +183,14 @@ SECTIONS
 			 *(DlnaShell)
 			 *(DlnaShell_data)
 			 . = ALIGN(4);		
-		}	
+		}
+		.cdc_shell
+		{
+			_cdc_shell_vma_ = ADDR(.cdc_shell);		
+			*(driver_usbcdc_usbcdcdevice_shell)
+			*(driver_usbcdc_usbcdcdevice_shell_data)
+			. = ALIGN(4);				
+		}		
 		.usbotg_shell
 		{
 			_usbotg_shell_vma_ = ADDR(.usbotg_shell);
@@ -384,8 +391,8 @@ SECTIONS
 	
 	_linein_shell_len_ 		= SIZEOF (.linein_shell);	
 	_record_shell_len_ 		= SIZEOF (.record_shell);	
-
-
+	_cdc_shell_len_			= SIZEOF (.cdc_shell);	
+	
 	_shell_code_max_len 	= _custom_shell_len_;
 	_shell_code_max_len1 	= MAX(_shell_code_max_len,_dev_shell_len_);
 	_shell_code_max_len2 	= MAX(_shell_code_max_len1,_task_shell_len_);
@@ -419,12 +426,12 @@ SECTIONS
 	
 	_shell_code_max_len30 	= MAX(_shell_code_max_len29,_linein_shell_len_);
 	_shell_code_max_len31 	= MAX(_shell_code_max_len30,_record_shell_len_);
-
+	_shell_code_max_len32 	= MAX(_shell_code_max_len31,_cdc_shell_len_);
 
 
 /*	__init_code_load_addr = LOADADDR(.uart_shell) + SIZEOF (.uart_shell);	*/
  	__init_code_load_addr = __load_stop_uart_shell == SYS_CODE_BASE ? _shell_code_load_addr : __load_stop_uart_shell  ;	 
-	__init_code_image_addr = ADDR(.uart_shell) +  _shell_code_max_len31;
+	__init_code_image_addr = ADDR(.uart_shell) +  _shell_code_max_len32;
 	OVERLAY __init_code_image_addr : NOCROSSREFS  AT (__init_code_load_addr)
 	{	
 
@@ -575,6 +582,12 @@ SECTIONS
 			*(driver_ad_adcdevice_init)
 			. = ALIGN(4);
 		}
+		.cdc_init
+		{
+			_cdc_init_vma_ = ADDR(.cdc_init);
+			*(driver_usbcdc_usbcdcdevice_init)		
+			. = ALIGN(4);		
+		}
 		.usbotg_init
 		{
 			_usbotg_init_vma_ = ADDR(.usbotg_init);
@@ -618,7 +631,7 @@ SECTIONS
 	_linein_init_len_			= SIZEOF (.linein_init);
 	_linein_control_init_len_	= SIZEOF (.linein_control_init);
 	_record_control_init_len_	= SIZEOF (.record_control_init);
-	
+	_cdc_init_len_				= SIZEOF (.cdc_init);	
 			
 
 	_init_code_max_len  	= _dlna_task_init_len_;
@@ -649,8 +662,9 @@ SECTIONS
 	_init_code_max_len24 	= MAX(_init_code_max_len23, _linein_init_len_);
 	_init_code_max_len25 	= MAX(_init_code_max_len24, _linein_control_init_len_);
 	_init_code_max_len26 	= MAX(_init_code_max_len25, _record_control_init_len_);
-
-	_init_code_image_end_addr	=  ADDR(.uart_init) +  _init_code_max_len26;
+	_init_code_max_len27 	= MAX(_init_code_max_len26, _cdc_init_len_);
+	
+	_init_code_image_end_addr	=  ADDR(.uart_init) +  _init_code_max_len27;
 
 
 	_init_code_load_addr  = LOADADDR(.uart_init) + SIZEOF (.uart_init);	
@@ -872,8 +886,18 @@ SECTIONS
 	}
 	_adc_dev_code_len =  SIZEOF (.adc_dev_code);	
 	
-    _usbotg_dev_code_image_addr 	= ADDR(.adc_dev_code) + SIZEOF ( .adc_dev_code );
-    _usbotg_dev_code_load_addr		= LOADADDR(.adc_dev_code) + SIZEOF ( .adc_dev_code );	
+	_cdc_dev_code_image_addr 		= ADDR(.adc_dev_code) + SIZEOF ( .adc_dev_code );
+    _cdc_dev_code_load_addr		= LOADADDR(.adc_dev_code) + SIZEOF ( .adc_dev_code );	
+	.cdc_dev_code _cdc_dev_code_image_addr : AT (_cdc_dev_code_load_addr)
+	{
+ 		*(driver_usbcdc_usbcdcdevice_common)
+ 		 *\UsbCdcDevice.o 
+ 		. = ALIGN(4);	
+	}
+	_cdc_dev_code_len =  SIZEOF (.cdc_dev_code);	
+	
+    _usbotg_dev_code_image_addr 	= ADDR(.cdc_dev_code) + SIZEOF ( .cdc_dev_code );
+    _usbotg_dev_code_load_addr		= LOADADDR(.cdc_dev_code) + SIZEOF ( .cdc_dev_code );	
 	.usbotg_dev_code _usbotg_dev_code_image_addr : AT (_usbotg_dev_code_load_addr)
 	{
         *(driver_usb_usbotgdev_common)
@@ -1485,6 +1509,8 @@ SECTIONS
 		
 		*(cpu_nanod_lib_vop_init)
 		*(cpu_nanod_lib_vop_read)
+		
+
 		. = ALIGN(4);
 		
 	}

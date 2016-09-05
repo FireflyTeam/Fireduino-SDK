@@ -82,7 +82,7 @@ void tone(unsigned int pin,unsigned int freq,unsigned int duration = 0)
 
 	else
 		// one pin has generated the tone and frequency is changed
-		if (gTonePinMask == (0x1 << pin) && freq != gFreq)
+		if (gTonePinMask == ((unsigned long )(0x1 << pin))&& freq != gFreq)
 			{
 				// Get current time(ms) and restore in gTimeCount
 				gTimeCount = millis();
@@ -103,6 +103,7 @@ void tone(unsigned int pin,unsigned int freq,unsigned int duration = 0)
 
 void noTone(unsigned int pin)
 {
+	pin = pin;
 	// clear the gTonePinMask when a tone is playing
 	gTonePinMask = 0;
 

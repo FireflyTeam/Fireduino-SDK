@@ -13,6 +13,7 @@
  */ 
 #include "io.h"
 #include "ard_gpio.h"
+#include "wiring.h"
 
 void pinMode(unsigned char pin, WiringPinMode mode)
 {

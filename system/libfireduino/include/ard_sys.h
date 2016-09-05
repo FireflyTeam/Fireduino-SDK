@@ -19,9 +19,12 @@ extern "C" {
 #endif
 
 // get systick count value
+extern unsigned long SysTickPeriodGet(void);
+extern unsigned long SysTickValueGet(void);
 extern unsigned long get_SystickCount(void);
 extern unsigned int get_sys_random_seed(void);
-
+extern void Delay_Ms(unsigned long ms);
+extern void DelayUs(unsigned long us);
 #ifdef __cplusplus
 }
 #endif

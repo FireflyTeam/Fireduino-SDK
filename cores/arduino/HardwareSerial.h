@@ -122,6 +122,6 @@ public:
     using Print::write;
 };
 
-extern HardwareSerial Serial;
 extern HardwareSerial Serial1;
+extern HardwareSerial Serial2;
 #endif
