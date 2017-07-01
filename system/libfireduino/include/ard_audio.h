@@ -12,8 +12,8 @@
  * or email to <service@t-firefly.com>.
  */
 
-#ifndef _ARDUINO_ADUIO_H_
-#define _ARDUINO_ADUIO_H_
+#ifndef _ARDUINO_AUDIO_H_
+#define _ARDUINO_AUDIO_H_
 
 
 #ifdef __cplusplus
